@@ -40,6 +40,8 @@ outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
 
 
 class MsgtoPdf:
+    outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
+
     def __init__(self, msgfile):
         self.msgfile = msgfile
         self.directory = PurePath(self.msgfile).parent
@@ -68,7 +70,7 @@ class MsgtoPdf:
     def __define_save_path(self):
         msgfile_name = self.file.split(".msg")[0]
         msgfile_folder = clean_path(msgfile_name)
-        save_path = os.path.join(self.directory, msgfile_folder)
+        save_path = PurePath(self.directory, msgfile_folder)
         return save_path
 
 

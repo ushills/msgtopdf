@@ -1,5 +1,15 @@
 import pytest
+import pathlib
 from msgtopdf import replace_CID, clean_path, create_save_path
+from msgtopdf import MsgtoPdf
+
+
+class Test_MsgtoPdf:
+    def test_init(self):
+        email = MsgtoPdf("C:/test/email/email.msg")
+        assert email.directory == pathlib.PurePath("C:/test/email")
+        assert email.file == "email.msg"
+        assert email.save_path == pathlib.PurePath("C:/test/email/email")
 
 
 def test_replace_CID():
