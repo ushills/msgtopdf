@@ -1,4 +1,5 @@
 import os
+import shutil
 import win32com.client
 import re
 from pathlib import Path, WindowsPath, PurePath
@@ -46,16 +47,20 @@ class MsgtoPdf:
         self.msgfile = msgfile
         self.directory = PurePath(self.msgfile).parent
         self.file = PurePath(self.msgfile).name
+        self.file_name = self.file.split(".msg")[0]
         self.save_path = self.__define_save_path()
 
     def raw_email_body(self):
         msg = outlook.OpenSharedItem(self.msgfile)
         if msg.BodyFormat == 2:
             body = msg.HTMLBody
+            self.email_format = "html"
         elif msg.BodyFormat == 3:
             body = msg.RTFBody
+            self.email_format = "html"
         else:
             body = msg.Body
+            self.email_format = "txt"
         self.raw_body = body
         return self.raw_body
 
@@ -63,15 +68,25 @@ class MsgtoPdf:
         os.mkdir(self.save_path)
         print(f"Created folder: {self.save_path}")
         raw_email_body = self.raw_email_body()
-        temp_outputfile = PurePath(self.save_path, "~temp.txt")
+        temp_outputfile = PurePath(self.save_path, "~temp")
         with open(temp_outputfile, "w") as f:
             for char in raw_email_body:
                 try:
                     f.write(char)
                 except:
                     pass
-        clean_temp_outputfile = PurePath(self.save_path, "~cleantemp.txt")
-        self.__convert_CID_image(temp_outputfile, clean_temp_outputfile)
+
+        # clean the file to correct the CID image tags to normal image files
+        clean_temp_outputfile = PurePath(self.save_path, "~cleantemp")
+        convert_CID_image(temp_outputfile, clean_temp_outputfile)
+        os.remove(temp_outputfile)
+
+        # rename the output file with the correct extension
+        email_body_file = PurePath(
+            self.save_path, self.file_name + "." + self.email_format
+        )
+        print(email_body_file)
+        os.rename(clean_temp_outputfile, email_body_file)
 
     def __define_save_path(self):
         msgfile_name = self.file.split(".msg")[0]
@@ -79,25 +94,27 @@ class MsgtoPdf:
         save_path = PurePath(self.directory, msgfile_folder)
         return save_path
 
-    def __convert_CID_image(self, input_file, output_file):
-        with open(output_file, "w") as ofile:
-            with open(input_file) as ifile:
-                for line in ifile:
-                    if not line.rstrip():
-                        continue
-                    else:
-                        line = line.rstrip()
-                        line = self.__replace_CID(line) + "\n"
-                        ofile.write(line)
 
-    def __replace_CID(self, line):
-        try:
-            p = re.compile(r"cid:([^\"@]*)[^\"]*")
-            m = p.search(line)
-            r = p.sub((m.groups()[0]), line)
-            return r
-        except:
-            return line
+def convert_CID_image(input_file, output_file):
+    with open(output_file, "w") as ofile:
+        with open(input_file) as ifile:
+            for line in ifile:
+                if not line.rstrip():
+                    continue
+                else:
+                    line = line.rstrip()
+                    line = replace_CID(line) + "\n"
+                    ofile.write(line)
+
+
+def replace_CID(line):
+    try:
+        p = re.compile(r"cid:([^\"@]*)[^\"]*")
+        m = p.search(line)
+        r = p.sub((m.groups()[0]), line)
+        return r
+    except:
+        return line
 
 
 def extract_email_attachments(directory, msgfile):
@@ -111,45 +128,11 @@ def extract_email_attachments(directory, msgfile):
             msg.Attachments.Item(item + 1).SaveAsFile(save_path + "\\" + filename)
 
 
-def save_email_body(directory, msgfile):
-    input_file = "msgoutput.html"
-    output_file = "output.html"
-    msg_path = os.path.join(directory, msgfile)
-    clean_body = extract_email_body(msg_path)
-    save_path = create_save_path(directory, msgfile)
-    input_file = os.path.join(save_path, input_file)
-    outputfile = os.path.join(save_path, output_file)
-    with open(outputfile, "w") as f:
-        for char in clean_body:
-            try:
-                f.write(char)
-            except:
-                pass
-    convert_CID_image(input_file, output_file)
-
-
 def clean_path(path):
     c_path = re.sub(r'[\\/\:*"<>\|\.%\$\^&£]', "", path)
     c_path = re.sub(r"[ ]{2,}", "", c_path)
     c_path = c_path.strip()
     return c_path
-
-
-def create_folder_structure(directory, msgfile):
-    save_path = create_save_path(directory, msgfile)
-    os.mkdir(save_path)
-    print(f"Created folder: {save_path}")
-    # if email_has_attachements(directory, msgfile):
-    #     attachment_folder = os.path.join(save_path, "attachments")
-    #     os.mkdir(attachment_folder)
-    #     print("Created attachments folder")
-
-
-def create_save_path(directory, msgfile):
-    msgfile_name = msgfile.split(".msg")[0]
-    msgfile_folder = clean_path(msgfile_name)
-    save_path = os.path.join(directory, msgfile_folder)
-    return save_path
 
 
 def email_has_attachements(directory, msgfile):
