@@ -1,6 +1,6 @@
 import pytest
 import pathlib
-from msgtopdf import replace_CID, clean_path, create_save_path
+from msgtopdf import replace_CID, clean_path
 from msgtopdf import MsgtoPdf
 
 
@@ -31,10 +31,4 @@ def test_replace_CID_no_replace():
 def test_clean_path():
     path = r"RE:/ test dirty path ^"
     assert clean_path(path) == "RE test dirty path"
-
-
-def test_create_save_path():
-    directory = r"C:\test\path"
-    msgfile = "test.msg"
-    assert create_save_path(directory, msgfile) == r"C:\test\path\test"
 
