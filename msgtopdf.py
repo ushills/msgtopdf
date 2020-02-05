@@ -47,10 +47,6 @@ class MsgtoPdf:
         self.directory = PurePath(self.msgfile).parent
         self.file = PurePath(self.msgfile).name
         self.save_path = self.__define_save_path()
-        print(self.msgfile)
-        print(self.directory)
-        print(self.file)
-        print(self.save_path)
 
     def raw_email_body(self):
         msg = outlook.OpenSharedItem(self.msgfile)
@@ -60,18 +56,48 @@ class MsgtoPdf:
             body = msg.RTFBody
         else:
             body = msg.Body
-        return raw_body
+        self.raw_body = body
+        return self.raw_body
 
-    def email_body(self):
+    def save_email_body(self):
         os.mkdir(self.save_path)
-        print(f"Created folder: {save_path}")
-        pass
+        print(f"Created folder: {self.save_path}")
+        raw_email_body = self.raw_email_body()
+        temp_outputfile = PurePath(self.save_path, "~temp.txt")
+        with open(temp_outputfile, "w") as f:
+            for char in raw_email_body:
+                try:
+                    f.write(char)
+                except:
+                    pass
+        clean_temp_outputfile = PurePath(self.save_path, "~cleantemp.txt")
+        self.__convert_CID_image(temp_outputfile, clean_temp_outputfile)
 
     def __define_save_path(self):
         msgfile_name = self.file.split(".msg")[0]
         msgfile_folder = clean_path(msgfile_name)
         save_path = PurePath(self.directory, msgfile_folder)
         return save_path
+
+    def __convert_CID_image(self, input_file, output_file):
+        with open(output_file, "w") as ofile:
+            with open(input_file) as ifile:
+                for line in ifile:
+                    if not line.rstrip():
+                        continue
+                    else:
+                        line = line.rstrip()
+                        line = self.__replace_CID(line) + "\n"
+                        ofile.write(line)
+
+    def __replace_CID(self, line):
+        try:
+            p = re.compile(r"cid:([^\"@]*)[^\"]*")
+            m = p.search(line)
+            r = p.sub((m.groups()[0]), line)
+            return r
+        except:
+            return line
 
 
 def extract_email_attachments(directory, msgfile):
@@ -83,28 +109,6 @@ def extract_email_attachments(directory, msgfile):
             filename = msg.Attachments.Item(item + 1).Filename
             save_path = create_save_path(directory, msgfile)
             msg.Attachments.Item(item + 1).SaveAsFile(save_path + "\\" + filename)
-
-
-def convert_CID_image(input_file, output_file):
-    with open(output_file, "w") as ofile:
-        with open(input_file) as ifile:
-            for line in ifile:
-                if not line.rstrip():
-                    continue
-                else:
-                    line = line.rstrip()
-                    line = replace_CID(line) + "\n"
-                    ofile.write(line)
-
-
-def replace_CID(body):
-    try:
-        p = re.compile(r"cid:([^\"@]*)[^\"]*")
-        m = p.search(body)
-        r = p.sub((m.groups()[0]), body)
-        return r
-    except:
-        return body
 
 
 def save_email_body(directory, msgfile):
