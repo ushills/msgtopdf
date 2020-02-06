@@ -1,4 +1,4 @@
-import html
+import cgi
 import os
 import re
 import shutil
@@ -34,29 +34,29 @@ class MsgtoPdf:
     def save_email_body(self):
         os.mkdir(self.save_path)
         print(f"Created folder: {self.save_path}")
+        html_header = self.add_header_information()
         raw_email_body = self.raw_email_body()
-        temp_outputfile = PurePath(self.save_path, "~temp")
-        with open(temp_outputfile, "w") as f:
-            for char in raw_email_body:
-                try:
-                    f.write(char)
-                except:
-                    pass
+        full_email_body = html_header + raw_email_body
+        # full_email_body = str(full_email_body.encode(encoding="ascii", errors="ignore"))
+        temp_outputfile = PurePath(self.save_path, "~temp.html")
+        with open(temp_outputfile, "w", encoding="utf-8") as f:
+            f.write(full_email_body)
 
-        # clean the file to correct the CID image tags to normal image files
-        clean_temp_outputfile = PurePath(self.save_path, "~cleantemp")
-        html_str = self.add_header_information()
-        with open(clean_temp_outputfile, "w") as ofile:
-            ofile.write(html_str)
-        convert_CID_image(temp_outputfile, clean_temp_outputfile)
-        os.remove(temp_outputfile)
+        # # clean the file to correct the CID image tags to normal image files
+        # clean_temp_outputfile = PurePath(self.save_path, "~cleantemp")
+        # html_str = self.add_header_information()
+        # with open(clean_temp_outputfile, "w") as ofile:
+        #     ofile.write(html_str)
+        # convert_CID_image(temp_outputfile, clean_temp_outputfile)
+        # os.remove(temp_outputfile)
 
         # rename the output file with the correct extension
-        email_body_file = PurePath(
-            self.save_path, self.file_name + "." + self.email_format
-        )
-        print(email_body_file)
-        os.rename(clean_temp_outputfile, email_body_file)
+        # email_body_file = PurePath(
+        #     self.save_path, self.file_name + "." + self.email_format
+        # )
+        # print(email_body_file)
+        # os.rename(clean_temp_outputfile, email_body_file)
+        print(full_email_body)
 
     def __define_save_path(self):
         msgfile_name = self.file.split(".msg")[0]
