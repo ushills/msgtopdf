@@ -37,18 +37,15 @@ class MsgtoPdf:
         html_header = self.add_header_information()
         raw_email_body = self.raw_email_body()
         full_email_body = html_header + raw_email_body
-        # full_email_body = str(full_email_body.encode(encoding="ascii", errors="ignore"))
-        temp_outputfile = PurePath(self.save_path, "~temp.html")
+
+        temp_outputfile = PurePath(self.save_path, "~temp")
         with open(temp_outputfile, "w", encoding="utf-8") as f:
             f.write(full_email_body)
 
-        # # clean the file to correct the CID image tags to normal image files
-        # clean_temp_outputfile = PurePath(self.save_path, "~cleantemp")
-        # html_str = self.add_header_information()
-        # with open(clean_temp_outputfile, "w") as ofile:
-        #     ofile.write(html_str)
-        # convert_CID_image(temp_outputfile, clean_temp_outputfile)
-        # os.remove(temp_outputfile)
+        # clean the file to correct the CID image tags to normal image files
+        clean_temp_outputfile = PurePath(self.save_path, "~cleantemp")
+        self.convert_CID_image(temp_outputfile, clean_temp_outputfile)
+        os.remove(temp_outputfile)
 
         # rename the output file with the correct extension
         # email_body_file = PurePath(
@@ -56,7 +53,7 @@ class MsgtoPdf:
         # )
         # print(email_body_file)
         # os.rename(clean_temp_outputfile, email_body_file)
-        print(full_email_body)
+        print(self.image_files)
 
     def __define_save_path(self):
         msgfile_name = self.file.split(".msg")[0]
@@ -66,7 +63,7 @@ class MsgtoPdf:
 
     def add_header_information(self):
         html_str = """
-        <p style="font-family: Arial;font-size: 12px">
+        <p style="font-family: Arial;font-size: 12.0pt">
         <strong>From:</strong>               {sender}</br>
         <strong>Sent:</strong>               {sent}</br>
         <strong>To:</strong>                 {to}</br>
@@ -82,34 +79,29 @@ class MsgtoPdf:
             subject=self.msg.Subject,
             attachments=self.msg.Attachments,
         )
-        print(formatted_html)
         return formatted_html
 
+    def convert_CID_image(self, input_file, output_file):
+        with open(output_file, "a") as ofile:
+            with open(input_file) as ifile:
+                for line in ifile:
+                    if not line.rstrip():
+                        continue
+                    else:
+                        line = line.rstrip()
+                        line = self.replace_CID(line) + "\n"
+                        ofile.write(line)
 
-def convert_CID_image(input_file, output_file):
-    with open(output_file, "a") as ofile:
-        with open(input_file) as ifile:
-            for line in ifile:
-                if not line.rstrip():
-                    continue
-                else:
-                    line = line.rstrip()
-                    line = replace_CID(line) + "\n"
-                    ofile.write(line)
-
-
-def replace_CID(line):
-    try:
-        p = re.compile(r"cid:([^\"@]*)[^\"]*")
-        m = p.search(line)
-        r = p.sub((m.groups()[0]), line)
-        return r
-    except:
-        return line
-
-
-def add_header_information():
-    pass
+    def replace_CID(self, line):
+        self.image_files = []
+        try:
+            p = re.compile(r"cid:([^\"@]*)[^\"]*")
+            m = p.search(line)
+            self.image_files.append(m.groups()[0])
+            line = p.sub((m.groups()[0]), line)
+            return line
+        except:
+            return line
 
 
 def extract_email_attachments(directory, msgfile):
