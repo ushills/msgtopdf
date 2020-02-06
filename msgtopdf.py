@@ -1,48 +1,15 @@
+import html
 import os
-import shutil
-import win32com.client
 import re
-from pathlib import Path, WindowsPath, PurePath
+import shutil
+from pathlib import Path, PurePath, WindowsPath
+
+import win32com.client
 
 outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
-# print(msg.SenderName)
-# print(msg.SenderEmailAddress)
-# print(msg.SentOn)
-# print(msg.To)
-# print(msg.CC)
-# print(msg.BCC)
-# print(msg.Subject)
-# BodyFormat 2 = HTML, 1 = Plain, 3 = RTF
-# if msg.BodyFormat == 2:
-#     print(msg.HTMLBody)
-#     html = msg.HTMLBody
-#     with open("msgbody.html", "w") as f:
-#         f.write(html)
-#     # with open("msgoutput.html", "w") as f:
-#     #     for line in html:
-#     #         try:
-#     #             f.write(line)
-#     #         except:
-#     #             pass
-# elif msg.BodyFormat == 3:
-#     print(msg.RTFBody)
-# else:
-#     print(msg.Body)
-
-# # Attachments
-# # count_attachments = msg.Attachments.Count
-# # if count_attachments > 0:
-# #     for item in range(count_attachments):
-# #         filename = msg.Attachments.Item(item + 1).Filename
-# #         print(filename)
-# #         msg.Attachments.Item(item + 1).SaveAsFile(os.getcwd() + "\\" + filename)
-
-# del outlook, msg
 
 
 class MsgtoPdf:
-    outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
-
     def __init__(self, msgfile):
         self.msgfile = msgfile
         self.directory = PurePath(self.msgfile).parent
@@ -99,14 +66,13 @@ class MsgtoPdf:
 
     def add_header_information(self):
         html_str = """
-        <p>From:               {sender}</p>
-        <p>Sent:               {sent}</p>
-        <p>To:                 {to}</p>
-        <p>Cc:                 {cc}</p>
-        <p>Subject:            {subject}</p>
-        <p>Attachments:        {attachments}<p>
-        </br>
-        </br>
+        <p style="font-family: Arial;font-size: 12px">
+        <strong>From:</strong>               {sender}</br>
+        <strong>Sent:</strong>               {sent}</br>
+        <strong>To:</strong>                 {to}</br>
+        <strong>Cc:</strong>                 {cc}</br>
+        <strong>Subject:</strong>            {subject}</p>
+        <hr>
         """
         formatted_html = html_str.format(
             sender=self.msg.SenderName,
@@ -182,8 +148,7 @@ def main():
     msgfile = "file.msg"
     msgfile = os.path.join(directory, msgfile)
     email = MsgtoPdf(msgfile)
-    # raw_body = email.raw_email_body()
-    # print(raw_body)
+    email.save_email_body()
 
 
 if __name__ == "__main__":

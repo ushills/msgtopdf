@@ -133,3 +133,5 @@ dmypy.json
 
 # project specific
 file.msg
+file/
+
