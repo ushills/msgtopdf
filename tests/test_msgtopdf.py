@@ -44,6 +44,7 @@ class Test_MsgtoPdf:
             email.replace_CID(line)
             == '<img src="image001.png"><img src="image002.png">'
         )
+        assert email.image_files == ["image001.png", "image002.png"]
 
     def test_replace_CID_no_replace(self):
         email = MsgtoPdf("C:/test/email.msg")
