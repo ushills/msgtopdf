@@ -79,12 +79,18 @@ class MsgtoPdf:
     #                     ofile.write(line)
 
     def replace_CID(self, body):
-        self.image_files = []
+        # self.image_files = []
+        # search for cid:(capture_group)@* upto "
         p = re.compile(r"cid:([^\"@]*)[^\"]*")
-        m = p.search(body)
-        r = p.sub((m.groups()[0]), body)
-        self.image_files.append(m.groups()[0])
+        r = p.sub(self.return_image_reference, body)
+        # self.image_files.append(m.groups()[0])
+        # print(r)
         return r
+
+    def return_image_reference(self, match):
+        value = str(match.groups()[0])
+        # print(value)
+        return value
 
 
 def extract_email_attachments(directory, msgfile):

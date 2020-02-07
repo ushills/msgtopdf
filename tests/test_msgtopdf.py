@@ -24,19 +24,31 @@ class Test_MsgtoPdf:
         email = MsgtoPdf("C:/test/email.msg")
         assert email.save_path == pathlib.PurePath("C:/test/email")
 
-    # def test_replace_CID(self):
-    #     line = 'src="cid:image002.png@01D54589.B5E9EB60"'
-    #     assert email.replace_CID(line) == 'src="image002.png"'
+    def test_replace_CID_single_CID(self):
+        email = MsgtoPdf("C:/test/email.msg")
+        line = '<img src="cid:image001.png@01D54589.B5E9EB60">'
+        assert email.replace_CID(line) == '<img src="image001.png">'
 
-    #     line = '<img width="1135" height="571" style="width:11.8229in;height:5.9479in" id="Picture_x0020_1" src="cid:image004.png@01D543A2.096B0830" alt="cid:image004.png@01D543A2.096B0830">'
-    #     assert (
-    #         self.replace_CID(line)
-    #         == '<img width="1135" height="571" style="width:11.8229in;height:5.9479in" id="Picture_x0020_1" src="image004.png" alt="image004.png">'
-    #     )
+    def test_replace_CID_alt_CID(self):
+        email = MsgtoPdf("C:/test/email.msg")
+        line = '<img width="1135" height="571" style="width:11.8229in;height:5.9479in" id="Picture_x0020_1" src="cid:image004.png@01D543A2.096B0830" alt="cid:image004.png@01D543A2.096B0830">'
+        assert (
+            email.replace_CID(line)
+            == '<img width="1135" height="571" style="width:11.8229in;height:5.9479in" id="Picture_x0020_1" src="image004.png" alt="image004.png">'
+        )
 
-    # def test_replace_CID_no_replace(self):
-    #     line = "<p>Not an image</p>"
-    #     assert email.replace_CID(line) == "<p>Not an image</p>"
+    def test_replace_CID_multiple_CID(self):
+        email = MsgtoPdf("C:/test/email.msg")
+        line = '<img src="cid:image001.png@01D54589.B5E9EB60"><img src="cid:image002.png@01D54589.B5E9EB60">'
+        assert (
+            email.replace_CID(line)
+            == '<img src="image001.png"><img src="image002.png">'
+        )
+
+    def test_replace_CID_no_replace(self):
+        email = MsgtoPdf("C:/test/email.msg")
+        body = "<p>Not an image</p>"
+        assert email.replace_CID(body) == "<p>Not an image</p>"
 
 
 def test_clean_path():
