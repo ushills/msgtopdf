@@ -6,11 +6,10 @@ from pathlib import Path, PurePath, WindowsPath
 
 import win32com.client
 
-outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
-
 
 class MsgtoPdf:
     def __init__(self, msgfile):
+        outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
         self.msgfile = msgfile
         self.directory = PurePath(self.msgfile).parent
         self.file = PurePath(self.msgfile).name
@@ -32,27 +31,14 @@ class MsgtoPdf:
         return self.raw_body
 
     def save_email_body(self):
-        os.mkdir(self.save_path)
+        # os.mkdir(self.save_path)
         print(f"Created folder: {self.save_path}")
         html_header = self.add_header_information()
         raw_email_body = self.raw_email_body()
         full_email_body = html_header + raw_email_body
+        clean_email_body = self.replace_CID(full_email_body)
 
-        temp_outputfile = PurePath(self.save_path, "~temp")
-        with open(temp_outputfile, "w", encoding="utf-8") as f:
-            f.write(full_email_body)
-
-        # clean the file to correct the CID image tags to normal image files
-        clean_temp_outputfile = PurePath(self.save_path, "~cleantemp")
-        self.convert_CID_image(temp_outputfile, clean_temp_outputfile)
-        os.remove(temp_outputfile)
-
-        # rename the output file with the correct extension
-        # email_body_file = PurePath(
-        #     self.save_path, self.file_name + "." + self.email_format
-        # )
-        # print(email_body_file)
-        # os.rename(clean_temp_outputfile, email_body_file)
+        print(clean_email_body)
         print(self.image_files)
 
     def __define_save_path(self):
@@ -81,27 +67,24 @@ class MsgtoPdf:
         )
         return formatted_html
 
-    def convert_CID_image(self, input_file, output_file):
-        with open(output_file, "a") as ofile:
-            with open(input_file) as ifile:
-                for line in ifile:
-                    if not line.rstrip():
-                        continue
-                    else:
-                        line = line.rstrip()
-                        line = self.replace_CID(line) + "\n"
-                        ofile.write(line)
+    # def convert_CID_image(self, input_file, output_file):
+    #     with open(output_file, "w") as ofile:
+    #         with open(input_file) as ifile:
+    #             for line in ifile:
+    #                 if not line.rstrip():
+    #                     continue
+    #                 else:
+    #                     line = line.rstrip()
+    #                     line = self.replace_CID(line) + "\n"
+    #                     ofile.write(line)
 
-    def replace_CID(self, line):
+    def replace_CID(self, body):
         self.image_files = []
-        try:
-            p = re.compile(r"cid:([^\"@]*)[^\"]*")
-            m = p.search(line)
-            self.image_files.append(m.groups()[0])
-            line = p.sub((m.groups()[0]), line)
-            return line
-        except:
-            return line
+        p = re.compile(r"cid:([^\"@]*)[^\"]*")
+        m = p.search(body)
+        r = p.sub((m.groups()[0]), body)
+        self.image_files.append(m.groups()[0])
+        return r
 
 
 def extract_email_attachments(directory, msgfile):
@@ -141,6 +124,7 @@ def main():
     msgfile = os.path.join(directory, msgfile)
     email = MsgtoPdf(msgfile)
     email.save_email_body()
+    # print(email.raw_email_body())
 
 
 if __name__ == "__main__":
