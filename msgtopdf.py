@@ -31,15 +31,24 @@ class MsgtoPdf:
         return self.raw_body
 
     def save_email_body(self):
-        # os.mkdir(self.save_path)
+        os.mkdir(self.save_path)
         print(f"Created folder: {self.save_path}")
         html_header = self.add_header_information()
         raw_email_body = self.raw_email_body()
         full_email_body = html_header + raw_email_body
         clean_email_body = self.replace_CID(full_email_body)
+        body_file = PurePath(self.save_path, self.file_name + ".html")
+        with open(body_file, "w", encoding="utf-8") as f:
+            f.write(clean_email_body)
 
-        print(clean_email_body)
-        print(self.image_files)
+    def extract_email_attachments(self):
+        count_attachments = self.msg.Attachments.Count
+        if count_attachments > 0:
+            for item in range(count_attachments):
+                attachment_filename = self.msg.Attachments.Item(item + 1).Filename
+                self.msg.Attachments.Item(item + 1).SaveAsFile(
+                    PurePath(self.save_path, attachment_filename)
+                )
 
     def __define_save_path(self):
         msgfile_name = self.file.split(".msg")[0]
@@ -67,17 +76,6 @@ class MsgtoPdf:
         )
         return formatted_html
 
-    # def convert_CID_image(self, input_file, output_file):
-    #     with open(output_file, "w") as ofile:
-    #         with open(input_file) as ifile:
-    #             for line in ifile:
-    #                 if not line.rstrip():
-    #                     continue
-    #                 else:
-    #                     line = line.rstrip()
-    #                     line = self.replace_CID(line) + "\n"
-    #                     ofile.write(line)
-
     def replace_CID(self, body):
         self.image_files = []
         # search for cid:(capture_group)@* upto "
@@ -93,17 +91,6 @@ class MsgtoPdf:
         if value not in self.image_files:
             self.image_files.append(value)
         return value
-
-
-def extract_email_attachments(directory, msgfile):
-    msg_path = os.path.join(directory, msgfile)
-    msg = outlook.OpenSharedItem(msg_path)
-    count_attachments = msg.Attachments.Count
-    if count_attachments > 0:
-        for item in range(count_attachments):
-            filename = msg.Attachments.Item(item + 1).Filename
-            save_path = create_save_path(directory, msgfile)
-            msg.Attachments.Item(item + 1).SaveAsFile(save_path + "\\" + filename)
 
 
 def clean_path(path):
@@ -132,7 +119,7 @@ def main():
     msgfile = os.path.join(directory, msgfile)
     email = MsgtoPdf(msgfile)
     email.save_email_body()
-    # print(email.raw_email_body())
+    email.extract_email_attachments()
 
 
 if __name__ == "__main__":
