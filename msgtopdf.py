@@ -1,7 +1,6 @@
-import os
 import re
 import shutil
-from pathlib import Path, PurePath, WindowsPath
+from pathlib import Path, PurePath
 from subprocess import run
 
 import win32com.client
@@ -31,8 +30,7 @@ class MsgtoPdf:
         return self.raw_body
 
     def save_email_body(self):
-        os.mkdir(self.save_path)
-        print(f"Created folder: {self.save_path}")
+        Path.mkdir(Path(self.save_path))
         html_header = self.add_header_information()
         raw_email_body = self.raw_email_body()
         full_email_body = html_header + raw_email_body
@@ -104,9 +102,6 @@ class MsgtoPdf:
         # search for cid:(capture_group)@* upto "
         p = re.compile(r"cid:([^\"@]*)[^\"]*")
         r = p.sub(self.return_image_reference, body)
-        # self.image_files.append(m.groups()[0])
-        # print(r)
-        print(self.image_files)
         return r
 
     def return_image_reference(self, match):
@@ -130,7 +125,7 @@ def clean_path(path):
 
 
 def email_has_attachements(directory, msgfile):
-    msg_path = os.path.join(directory, msgfile)
+    msg_path = Path(directory, msgfile)
     msg = outlook.OpenSharedItem(msg_path)
     if msg.Attachments.Count > 0:
         return True
@@ -143,9 +138,9 @@ def process_email(directory, msgfile):
 
 
 def main():
-    directory = os.getcwd()
+    directory = Path.cwd()
     msgfile = "file.msg"
-    msgfile = os.path.join(directory, msgfile)
+    msgfile = Path(directory, msgfile)
     email = MsgtoPdf(msgfile)
     email.save_email_body()
 
