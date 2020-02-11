@@ -37,10 +37,10 @@ class MsgtoPdf:
         raw_email_body = self.raw_email_body()
         full_email_body = html_header + raw_email_body
         clean_email_body = self.replace_CID(full_email_body)
-        body_file = PurePath(self.save_path, self.file_name + ".html")
+        self.html_body_file = PurePath(self.save_path, self.file_name + ".html")
         self.extract_email_attachments()
-        # convert_html_to_pdf(clean_email_body, body_file)
-        with open(body_file, "w", encoding="utf-8") as f:
+        # convert_html_to_pdf(clean_email_body, self.html_body_file)
+        with open(self.html_body_file, "w", encoding="utf-8") as f:
             f.write(clean_email_body)
         # save pdf copy using wkhtmltopdf
         run(
@@ -53,10 +53,11 @@ class MsgtoPdf:
                 "--footer-line",
                 "--footer-center",
                 "[page] / [topage]",
-                body_file,
+                self.html_body_file,
                 PurePath(self.save_path, self.file_name + ".pdf"),
             ]
         )
+        self.__delete_redundant_files()
 
     def extract_email_attachments(self):
         count_attachments = self.msg.Attachments.Count
@@ -113,6 +114,12 @@ class MsgtoPdf:
         if value not in self.image_files:
             self.image_files.append(value)
         return value
+
+    def __delete_redundant_files(self):
+        Path.unlink(Path(self.html_body_file))
+        for f in self.image_files:
+            image_full_path = Path(self.save_path, f)
+            Path.unlink(image_full_path)
 
 
 def clean_path(path):
