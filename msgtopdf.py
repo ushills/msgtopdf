@@ -1,8 +1,8 @@
-import cgi
 import os
 import re
 import shutil
 from pathlib import Path, PurePath, WindowsPath
+from subprocess import run
 
 import win32com.client
 
@@ -38,8 +38,25 @@ class MsgtoPdf:
         full_email_body = html_header + raw_email_body
         clean_email_body = self.replace_CID(full_email_body)
         body_file = PurePath(self.save_path, self.file_name + ".html")
+        self.extract_email_attachments()
+        # convert_html_to_pdf(clean_email_body, body_file)
         with open(body_file, "w", encoding="utf-8") as f:
             f.write(clean_email_body)
+        # save pdf copy using wkhtmltopdf
+        run(
+            [
+                "wkhtmltopdf",
+                "--encoding",
+                "utf-8",
+                "--footer-font-size",
+                "6",
+                "--footer-line",
+                "--footer-center",
+                "[page] / [topage]",
+                body_file,
+                PurePath(self.save_path, self.file_name + ".pdf"),
+            ]
+        )
 
     def extract_email_attachments(self):
         count_attachments = self.msg.Attachments.Count
@@ -58,7 +75,11 @@ class MsgtoPdf:
 
     def add_header_information(self):
         html_str = """
-        <p style="font-family: Arial;font-size: 12.0pt">
+        <head>
+        <meta charset="UTF-8">
+        <base href="{base_href}">
+        <p style="font-family: Arial;font-size: 11.0pt">
+        </head>
         <strong>From:</strong>               {sender}</br>
         <strong>Sent:</strong>               {sent}</br>
         <strong>To:</strong>                 {to}</br>
@@ -67,6 +88,7 @@ class MsgtoPdf:
         <hr>
         """
         formatted_html = html_str.format(
+            base_href="file:///" + str(self.save_path) + "\\",
             sender=self.msg.SenderName,
             sent=self.msg.SentOn,
             to=self.msg.To,
@@ -119,7 +141,6 @@ def main():
     msgfile = os.path.join(directory, msgfile)
     email = MsgtoPdf(msgfile)
     email.save_email_body()
-    email.extract_email_attachments()
 
 
 if __name__ == "__main__":
