@@ -4,7 +4,6 @@ from unittest.mock import MagicMock
 import win32com.client
 
 
-from msgtopdf import clean_path
 from msgtopdf import MsgtoPdf
 
 mock_outlook = MagicMock()
@@ -51,8 +50,8 @@ class Test_MsgtoPdf:
         body = "<p>Not an image</p>"
         assert email.replace_CID(body) == "<p>Not an image</p>"
 
-
-def test_clean_path():
-    path = r"RE:/ test dirty path ^"
-    assert clean_path(path) == "RE test dirty path"
+    def test_clean_path(self):
+        email = MsgtoPdf("C:/test/email.msg")
+        path = r"RE:/ test dirty path ^"
+        assert email.clean_path(path) == "RE test dirty path"
 

@@ -31,7 +31,7 @@ class MsgtoPdf:
 
     def save_email_body(self):
         Path.mkdir(Path(self.save_path))
-        html_header = self.add_header_information()
+        html_header = self.__add_header_information()
         raw_email_body = self.raw_email_body()
         full_email_body = html_header + raw_email_body
         clean_email_body = self.replace_CID(full_email_body)
@@ -68,11 +68,11 @@ class MsgtoPdf:
 
     def __define_save_path(self):
         msgfile_name = self.file.split(".msg")[0]
-        msgfile_folder = clean_path(msgfile_name)
+        msgfile_folder = self.clean_path(msgfile_name)
         save_path = PurePath(self.directory, msgfile_folder)
         return save_path
 
-    def add_header_information(self):
+    def __add_header_information(self):
         html_str = """
         <head>
         <meta charset="UTF-8">
@@ -101,10 +101,10 @@ class MsgtoPdf:
         self.image_files = []
         # search for cid:(capture_group)@* upto "
         p = re.compile(r"cid:([^\"@]*)[^\"]*")
-        r = p.sub(self.return_image_reference, body)
+        r = p.sub(self.__return_image_reference, body)
         return r
 
-    def return_image_reference(self, match):
+    def __return_image_reference(self, match):
         value = str(match.groups()[0])
         if value not in self.image_files:
             self.image_files.append(value)
@@ -116,34 +116,9 @@ class MsgtoPdf:
             image_full_path = Path(self.save_path, f)
             Path.unlink(image_full_path)
 
+    def clean_path(self, path):
+        c_path = re.sub(r'[\\/\:*"<>\|\.%\$\^&£]', "", path)
+        c_path = re.sub(r"[ ]{2,}", "", c_path)
+        c_path = c_path.strip()
+        return c_path
 
-def clean_path(path):
-    c_path = re.sub(r'[\\/\:*"<>\|\.%\$\^&£]', "", path)
-    c_path = re.sub(r"[ ]{2,}", "", c_path)
-    c_path = c_path.strip()
-    return c_path
-
-
-def email_has_attachements(directory, msgfile):
-    msg_path = Path(directory, msgfile)
-    msg = outlook.OpenSharedItem(msg_path)
-    if msg.Attachments.Count > 0:
-        return True
-
-
-def process_email(directory, msgfile):
-    create_folder_structure(directory, msgfile)
-    save_email_body(directory, msgfile)
-    extract_email_attachments(directory, msgfile)
-
-
-def main():
-    directory = Path.cwd()
-    msgfile = "file.msg"
-    msgfile = Path(directory, msgfile)
-    email = MsgtoPdf(msgfile)
-    email.save_email_body()
-
-
-if __name__ == "__main__":
-    main()
