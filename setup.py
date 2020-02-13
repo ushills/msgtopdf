@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="msgtopdf_pkg_ushills",
+    name="msgtopdf",
     version="0.0.1",
     author="Ian Hill",
     author_email="web@ushills.co.uk",
@@ -13,6 +13,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/ushills/msgtopdf",
     packages=setuptools.find_packages(),
+    install_requires=["pywin32",],
     classifiers=[
         "Programming Language :: Python :: 3",
         "Development Status :: 4 - Beta",
