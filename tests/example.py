@@ -1,4 +1,4 @@
-from msgtopdf import MsgtoPdf
+from msgtopdf import Msgtopdf
 from pathlib import Path
 
 
@@ -6,8 +6,8 @@ def main():
     directory = Path.cwd()
     msgfile = "file.msg"
     msgfile = Path(directory, msgfile)
-    email = MsgtoPdf(msgfile)
-    email.save_email_body()
+    email = Msgtopdf(msgfile)
+    email.email2pdf()
 
 
 if __name__ == "__main__":

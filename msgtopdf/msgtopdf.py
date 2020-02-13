@@ -6,7 +6,7 @@ from subprocess import run
 import win32com.client
 
 
-class MsgtoPdf:
+class Msgtopdf:
     def __init__(self, msgfile):
         outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
         self.msgfile = msgfile
@@ -29,7 +29,7 @@ class MsgtoPdf:
         self.raw_body = body
         return self.raw_body
 
-    def save_email_body(self):
+    def email2pdf(self):
         Path.mkdir(Path(self.save_path))
         html_header = self.__add_header_information()
         raw_email_body = self.raw_email_body()

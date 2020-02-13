@@ -1,1 +1,1 @@
-from .msgtopdf import MsgtoPdf
+from .msgtopdf import Msgtopdf
