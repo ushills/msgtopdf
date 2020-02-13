@@ -70,6 +70,7 @@ class Msgtopdf:
         msgfile_name = self.file.split(".msg")[0]
         msgfile_folder = self.clean_path(msgfile_name)
         save_path = PurePath(self.directory, msgfile_folder)
+        # TODO check if save_path already exists and if so add increment
         return save_path
 
     def __add_header_information(self):
