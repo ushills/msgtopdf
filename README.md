@@ -1,12 +1,12 @@
 # Converts Outlook .msg files to PDF
 
-`msgtopdf` is a Python 3 module to convert Outlook `.msg` files to PDF and extract the attachments.  Unlike the majority of current modules msgtopdf maintains the formatting of HTML and RTF messages and embeds any inline images in the PDF output.
+`msgtopdf` is a Python 3 module to convert Outlook `.msg` files to PDF and extract the attachments.  Unlike the majority of current modules `msgtopdf` maintains the formatting of HTML and RTF messages and embeds any inline images in the PDF output.
 
-As the module used the `win32com` library the host machine must have Outlook installed.
+As the module uses the `win32com` library the host machine must have Outlook installed.
 
 `msgtopdf` uses the [wkhtmltopdf](https://wkhtmltopdf.org/) tool to convert the HTML message to PDF and [wkhtmltopdf](https://wkhtmltopdf.org/) must be installed separately.
 
-Currently `msgtopdf` extracts the message body and attachments to a new subfolder named using the emails subject.
+Currently `msgtopdf` extracts the message body and attachments to a new subfolder using subject of the email as the folder name.
 
 # Usage
 
@@ -20,7 +20,7 @@ Ensure that `wkhtmltopdf` command is found in your `PATH`.
 
 This can be tested by entering `wkhtmltopdf --version` in your Command Prompt.
 
-You should receive and output similar to the attached.
+You should receive an output similar to the attached.
 
 ```
 Microsoft Windows [Version 6.1.7601]

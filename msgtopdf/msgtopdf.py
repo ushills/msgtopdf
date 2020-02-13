@@ -9,7 +9,7 @@ import win32com.client
 class Msgtopdf:
     def __init__(self, msgfile):
         outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
-        self.msgfile = msgfile
+        self.msgfile = PurePath(msgfile)
         self.directory = PurePath(self.msgfile).parent
         self.file = PurePath(self.msgfile).name
         self.file_name = self.file.split(".msg")[0]
