@@ -7,14 +7,19 @@ init()
 
 
 @click.command()
-@click.option("--file", help="Name of file to convert")
-def convert_file(file):
+@click.option(
+    "-f",
+    "--file",
+    "filename",
+    help="Name of the file to convert",
+    type=click.Path(exists=True, resolve_path=True),
+)
+def convert_file(filename):
     try:
-        msgfile = Path(file)
-        msgfile = msgfile.absolute()
-        f = Msgtopdf(msgfile)
+        print(filename)
+        f = Msgtopdf(filename)
         f.email2pdf()
-        print(Fore.GREEN + f"Converted {file} to PDF!")
+        print(Fore.GREEN + f"Converted {filename} to PDF!")
     except:
         print(Fore.RED + f"Filename is invalid, enter a valid filename!")
 
