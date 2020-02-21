@@ -1,6 +1,7 @@
 import click
 from colorama import init, Fore
-from msgtopdf import Msgtopdf
+
+# from msgtopdf import Msgtopdf
 from pathlib import Path, PurePath
 
 # Initialise colorama
@@ -23,7 +24,7 @@ init()
     help="Convert all msg files in directory PATH to pdf.",
 )
 @click.argument("path", type=click.Path(exists=True, resolve_path=True))
-def msg2pdf(path_type, path):
+def cli(path_type, path):
     """msg2pdf converts Outlook email messages (msg) to pdf.\n
     The output is a folder for each email using the email subject as the folder name
     inculding a pdf of the email and all attachments.\n
@@ -51,6 +52,3 @@ def convert_directory(directory):
     for f in msg_files:
         convert_file(f)
 
-
-if __name__ == "__main__":
-    msg2pdf()

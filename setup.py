@@ -1,19 +1,22 @@
 import setuptools
 
+
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="msgtopdf",
-    version="0.0.1",
+    version="0.0.2",
     author="Ian Hill",
     author_email="web@ushills.co.uk",
     description="Convert Outlook msg to PDF",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/ushills/msgtopdf",
-    packages=setuptools.find_packages(),
-    install_requires=["pywin32",],
+    packages=setuptools.find_packages(exclude=("tests",)),
+    install_requires=["pywin32", "Click", "Colorama"],
+    entry_points={"console_scripts": ["msg2pdf=msgtopdf.scripts.msg2pdf:cli"]},
+    include_package_data=True,
     classifiers=[
         "Programming Language :: Python :: 3",
         "Development Status :: 4 - Beta",
