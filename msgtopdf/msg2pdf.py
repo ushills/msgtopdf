@@ -9,22 +9,29 @@ init()
 
 @click.command()
 @click.option(
-    "-f", "--file", "path_type", flag_value="filename", help="Convert a file to pdf."
+    "-f",
+    "--file",
+    "path_type",
+    flag_value="filename",
+    help="Convert an individual file PATH to pdf.",
 )
 @click.option(
     "-d",
     "--directory",
     "path_type",
     flag_value="directory",
-    help="Convert all msg files in directory to pdf.",
+    help="Convert all msg files in directory PATH to pdf.",
 )
 @click.argument("path", type=click.Path(exists=True, resolve_path=True))
 def msg2pdf(path_type, path):
+    """msg2pdf converts Outlook email messages (msg) to pdf.\n
+    The output is a folder for each email using the email subject as the folder name
+    inculding a pdf of the email and all attachments.\n
+    Inline images are included in the email pdf."""
     if path_type == "filename":
-        print("process file", path)
         convert_file(path)
     if path_type == "directory":
-        print("process directory", path)
+        convert_directory(path)
 
 
 def convert_file(filename):
@@ -33,19 +40,16 @@ def convert_file(filename):
         f = Msgtopdf(filename)
         f.email2pdf()
         print(Fore.GREEN + f"Converted {filename} to PDF!")
+        Fore.RESET
     except:
         print(Fore.RED + f"Filename is invalid, enter a valid filename!")
+        Fore.RESET
 
 
-# @msg2pdf.command()
-# @click.argument(
-#     "directory",
-#     # help="Name of directory to convert all msg files to pdf",
-#     type=click.Path(exists=True, resolve_path=True),
-# )
-# def convert_folder(directory):
-#     """Name of directory to convert all msg files to pdf"""
-#     print(directory)
+def convert_directory(directory):
+    msg_files = list(Path(directory).glob("**/*.msg"))
+    for f in msg_files:
+        convert_file(f)
 
 
 if __name__ == "__main__":
