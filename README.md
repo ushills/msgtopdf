@@ -6,11 +6,36 @@ As the module uses the `win32com` library the host machine must have Outlook ins
 
 `msgtopdf` uses the [wkhtmltopdf](https://wkhtmltopdf.org/) tool to convert the HTML message to PDF and [wkhtmltopdf](https://wkhtmltopdf.org/) must be installed separately.
 
-Currently `msgtopdf` extracts the message body and attachments to a new subfolder using subject of the email as the folder name.
+Currently `msgtopdf` extracts the message body and attachments to a new subfolder using the subject of the email as the folder name.
 
 # Usage
 
-Example usage is provided in the `tests/example.py` file.  The next plan on the timeline is to create a command line tool in which the user provides either a filename `-f` or directory `-d` and `msgtopdf` will process either a single `msg` file or all `msg` files in a directory.
+## Module Usage
+
+Example module usage is provided in the `tests/example.py` file.
+
+
+## Command Line Usage
+
+The command-line option `msg2pdf` will convert individual files or all `*.msg` files in a directory.
+
+`msg2pdf --help` for options.
+
+    Usage: msg2pdf [OPTIONS] PATH
+
+    msg2pdf converts Outlook email messages (msg) to pdf.
+
+    The output is a folder for each email using the email subject as the
+    folder name including a pdf of the email and all attachments.
+
+    Inline images are included in the email pdf.
+
+    Options:
+        -f, --file       Convert an individual file PATH to pdf.
+        -d, --directory  Convert all msg files in directory PATH to pdf.
+        --help           Show this message and exit.
+
+
 
 # Requirements
 
@@ -22,12 +47,11 @@ This can be tested by entering `wkhtmltopdf --version` in your Command Prompt.
 
 You should receive an output similar to the attached.
 
-```
-Microsoft Windows [Version 6.1.7601]
-Copyright (c) 2009 Microsoft Corporation.  All rights reserved.
 
-C:\>wkhtmltopdf --version
-wkhtmltopdf 0.12.5 (with patched qt)
+    Microsoft Windows [Version 6.1.7601]
+    Copyright (c) 2009 Microsoft Corporation.  All rights reserved.
 
-C:\>
-```
+    C:\>wkhtmltopdf --version
+    wkhtmltopdf 0.12.5 (with patched qt)
+
+    C:\>

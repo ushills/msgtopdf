@@ -1,10 +1,10 @@
-import setuptools
+from setuptools import setup, find_packages
 
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-setuptools.setup(
+setup(
     name="msgtopdf",
     version="0.0.2",
     author="Ian Hill",
@@ -13,9 +13,12 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/ushills/msgtopdf",
-    packages=setuptools.find_packages(exclude=("tests",)),
+    packages=find_packages(exclude=["tests"]),
     install_requires=["pywin32", "Click", "Colorama"],
-    entry_points={"console_scripts": ["msg2pdf=msgtopdf.scripts.msg2pdf:cli"]},
+    entry_points="""
+        [console_scripts]
+        msg2pdf=msgtopdf.scripts.msg2pdf:cli
+    """,
     include_package_data=True,
     classifiers=[
         "Programming Language :: Python :: 3",

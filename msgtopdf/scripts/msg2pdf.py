@@ -1,7 +1,7 @@
 import click
 from colorama import init, Fore
+from msgtopdf.msgtopdf import Msgtopdf
 
-# from msgtopdf import Msgtopdf
 from pathlib import Path, PurePath
 
 # Initialise colorama
@@ -37,14 +37,11 @@ def cli(path_type, path):
 
 def convert_file(filename):
     try:
-        print(filename)
         f = Msgtopdf(filename)
         f.email2pdf()
-        print(Fore.GREEN + f"Converted {filename} to PDF!")
-        Fore.RESET
+        print(Fore.GREEN + f"Converted {filename} to PDF!" + Fore.RESET)
     except:
-        print(Fore.RED + f"Filename is invalid, enter a valid filename!")
-        Fore.RESET
+        print(Fore.RED + f"Filename is invalid, enter a valid filename!" + Fore.RESET)
 
 
 def convert_directory(directory):

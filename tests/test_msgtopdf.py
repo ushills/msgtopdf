@@ -3,7 +3,6 @@ import pathlib
 from unittest.mock import MagicMock
 import win32com.client
 
-
 from msgtopdf import Msgtopdf
 
 mock_outlook = MagicMock()

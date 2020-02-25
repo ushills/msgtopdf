@@ -1,5 +1,4 @@
 import re
-import shutil
 from pathlib import Path, PurePath
 from subprocess import run
 
@@ -44,6 +43,8 @@ class Msgtopdf:
         run(
             [
                 "wkhtmltopdf",
+                "--log-level",
+                "warn",
                 "--encoding",
                 "utf-8",
                 "--footer-font-size",
