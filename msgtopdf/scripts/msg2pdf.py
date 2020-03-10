@@ -9,6 +9,7 @@ init()
 
 
 @click.command()
+@click.version_option()
 @click.option(
     "-f",
     "--file",

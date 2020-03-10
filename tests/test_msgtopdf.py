@@ -3,7 +3,7 @@ import pathlib
 from unittest.mock import MagicMock
 import win32com.client
 
-from msgtopdf import Msgtopdf
+from msgtopdf.msgtopdf import Msgtopdf
 
 mock_outlook = MagicMock()
 win32com.client = mock_outlook
@@ -53,4 +53,27 @@ class Test_Msgtopdf:
         email = Msgtopdf("C:/test/email.msg")
         path = r"RE:/ test dirty path ^"
         assert email.clean_path(path) == "RE test dirty path"
+
+    def test___delete_redundant_files(self):
+        email = Msgtopdf("C:/test/email.msg")
+        email.save_path = pathlib.PurePath("./tests/")
+        email.image_files = ["exists.png", "does_not_exist.png"]
+        email.html_body_file = "./tests/html_body.html"
+        # create temporary files for deletion
+        open("./tests/html_body.html", "w+")
+        open("./tests/exists.png", "w+")
+        assert email.image_files == ["exists.png", "does_not_exist.png"]
+        email._Msgtopdf__delete_redundant_files()
+
+    def test_raw_email_body_html(self):
+        email = Msgtopdf("C:/test/email.msg")
+        email.msg.BodyFormat = 2
+        email.raw_email_body()
+        assert email.email_format == "html"
+        email.msg.BodyFormat = 3
+        email.raw_email_body()
+        assert email.email_format == "html"
+        email.msg.BodyFormat = 1
+        email.raw_email_body()
+        assert email.email_format == "txt"
 

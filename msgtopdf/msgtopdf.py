@@ -116,7 +116,8 @@ class Msgtopdf:
         Path.unlink(Path(self.html_body_file))
         for f in self.image_files:
             image_full_path = Path(self.save_path, f)
-            Path.unlink(image_full_path)
+            if Path.exists(image_full_path):
+                Path.unlink(image_full_path)
 
     def clean_path(self, path):
         c_path = re.sub(r'[\\/\:*"<>\|\.%\$\^&£]', "", path)
