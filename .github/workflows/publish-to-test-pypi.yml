@@ -1,10 +1,10 @@
-name: Publish msgtopdf to PyPi & TestPyPI
+name: Publish msgtopdf to PyPi
 
 on: push
 
 jobs:
   build-n-publish:
-    name: Build and publish msgtopdf to PyPi & TestPyPI
+    name: Build and publish msgtopdf to PyPi
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
@@ -16,11 +16,6 @@ jobs:
       run: python -m pip install --upgrade setuptools wheel
     - name: Build
       run: python setup.py sdist bdist_wheel
-    - name: Publish to Test PyPI
-      uses: pypa/gh-action-pypi-publish@master
-      with:
-        password: ${{ secrets.test_pypi_password }}
-        repository_url: https://test.pypi.org/legacy/
     - name: Publish to PyPI
       if: startsWith(github.event.ref, 'refs/tags')
       uses: pypa/gh-action-pypi-publish@master
