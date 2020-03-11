@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="msgtopdf",
-    version="0.0.4",
+    version="0.1.0",
     author="Ian Hill",
     author_email="web@ushills.co.uk",
     description="Convert Outlook msg to PDF",
