@@ -1,3 +1,5 @@
+![Test msgtopdf](https://github.com/ushills/msgtopdf/workflows/Test%20msgtopdf/badge.svg) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 # Converts Outlook .msg files to PDF
 
 `msgtopdf` is a Python 3 module to convert Outlook `.msg` files to PDF and extract the attachments.  Unlike the majority of current modules `msgtopdf` maintains the formatting of HTML and RTF messages and embeds any inline images in the PDF output.
