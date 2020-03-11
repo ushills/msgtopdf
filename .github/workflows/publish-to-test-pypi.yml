@@ -5,7 +5,7 @@ on: push
 jobs:
   build-n-publish:
     name: Build and publish msgtopdf TestPyPI
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
     - name: Set up Python 3.8
