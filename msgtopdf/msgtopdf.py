@@ -14,6 +14,7 @@ class Msgtopdf:
         self.file_name = self.file.split(".msg")[0]
         self.save_path = self.__define_save_path()
         self.msg = outlook.OpenSharedItem(self.msgfile)
+        self.raw_body = None
 
     def raw_email_body(self):
         if self.msg.BodyFormat == 2:
@@ -31,7 +32,7 @@ class Msgtopdf:
     def email2pdf(self):
         Path.mkdir(Path(self.save_path))
         html_header = self.__add_header_information()
-        raw_email_body = self.raw_email_body()
+        raw_email_body = self.raw_email_body
         full_email_body = html_header + raw_email_body
         clean_email_body = self.replace_CID(full_email_body)
         self.html_body_file = PurePath(self.save_path, self.file_name + ".html")
@@ -70,9 +71,12 @@ class Msgtopdf:
     def __define_save_path(self):
         msgfile_name = self.file.split(".msg")[0]
         msgfile_folder = self.clean_path(msgfile_name)
-        save_path = PurePath(self.directory, msgfile_folder)
-        # TODO check if save_path already exists and if so add increment
-        return save_path
+        save_path = Path(self.directory, msgfile_folder)
+        increment = 0
+        while save_path.exists() and save_path.is_dir():
+            save_path = Path(self.directory, "%s (%d)" % (msgfile_folder, increment))
+            increment += 1
+        return PurePath(save_path)
 
     def __add_header_information(self):
         html_str = """
