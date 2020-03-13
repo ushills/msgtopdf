@@ -22,6 +22,19 @@ class Test_Msgtopdf:
         email = Msgtopdf("C:/test/email.msg")
         assert email.save_path == pathlib.PurePath("C:/test/email")
 
+        p = pathlib.Path("C:/test/email/email")
+        p.mkdir(exist_ok=True, parents=True)
+        email = Msgtopdf("C:/test/email.msg")
+        assert email.save_path == pathlib.PurePath("C:/test/email (0)")
+
+        p1 = pathlib.Path("C:/test/email (0)")
+        p1.mkdir(exist_ok=True, parents=True)
+        email = Msgtopdf("C:/test/email.msg")
+        assert email.save_path == pathlib.PurePath("C:/test/email (1)")
+
+        p.rmdir()
+        p1.rmdir()
+
     def test_replace_CID_single_CID(self):
         email = Msgtopdf("C:/test/email.msg")
         line = '<img src="cid:image001.png@01D54589.B5E9EB60">'
@@ -48,6 +61,11 @@ class Test_Msgtopdf:
         email = Msgtopdf("C:/test/email.msg")
         body = "<p>Not an image</p>"
         assert email.replace_CID(body) == "<p>Not an image</p>"
+
+    def test_clean_path(self):
+        email = Msgtopdf("C:/test/email.msg")
+        path = r"RE:/ test dirty path ^"
+        assert email.clean_path(path) == "RE test dirty path"
 
     def test_clean_path(self):
         email = Msgtopdf("C:/test/email.msg")
