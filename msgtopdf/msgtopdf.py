@@ -5,6 +5,8 @@ import logging
 
 import win32com.client
 
+__all__ = ["Msgtopdf"]
+
 # logging defaults
 logging.basicConfig(
     level=logging.INFO,
