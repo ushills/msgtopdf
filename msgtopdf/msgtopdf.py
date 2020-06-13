@@ -1,8 +1,16 @@
 import re
 from pathlib import Path, PurePath
-from subprocess import run
+import subprocess
+import logging
 
 import win32com.client
+
+# logging defaults
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    datefmt="%m/%d/%Y %I:%M:%S %p",
+)
 
 
 class Msgtopdf:
@@ -40,22 +48,26 @@ class Msgtopdf:
         with open(self.html_body_file, "w", encoding="utf-8") as f:
             f.write(clean_email_body)
         # save pdf copy using wkhtmltopdf
-        run(
-            [
-                "wkhtmltopdf",
-                "--log-level",
-                "warn",
-                "--encoding",
-                "utf-8",
-                "--footer-font-size",
-                "6",
-                "--footer-line",
-                "--footer-center",
-                "[page] / [topage]",
-                self.html_body_file,
-                PurePath(self.save_path, self.file_name + ".pdf"),
-            ]
-        )
+        try:
+            subprocess.run(
+                [
+                    "wkhtmltopdf",
+                    "--log-level",
+                    "warn",
+                    "--encoding",
+                    "utf-8",
+                    "--footer-font-size",
+                    "6",
+                    "--footer-line",
+                    "--footer-center",
+                    "[page] / [topage]",
+                    self.html_body_file,
+                    PurePath(self.save_path, self.file_name + ".pdf"),
+                ]
+            )
+        except Exception as e:
+            logging.critical("Could not call wkhtmltopdf")
+            logging.debug(e)
         self.__delete_redundant_files()
 
     def extract_email_attachments(self):
@@ -124,4 +136,3 @@ class Msgtopdf:
         c_path = re.sub(r"[ ]{2,}", "", c_path)
         c_path = c_path.strip()
         return c_path
-

@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup, find_namespace_packages
 
 
 with open("README.md", "r") as fh:
@@ -6,14 +6,14 @@ with open("README.md", "r") as fh:
 
 setup(
     name="msgtopdf",
-    version="0.1.1",
+    version="0.1.2",
     author="Ian Hill",
     author_email="web@ushills.co.uk",
     description="Convert Outlook msg to PDF",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/ushills/msgtopdf",
-    packages=find_packages(exclude=["tests"]),
+    packages=find_namespace_packages(include=["msgtopdf"], exclude=["tests"]),
     install_requires=["pywin32", "Click", "Colorama"],
     entry_points="""
         [console_scripts]
