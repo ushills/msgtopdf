@@ -1,4 +1,4 @@
-from setuptools import setup, find_namespace_packages
+from setuptools import setup, find_packages
 
 
 with open("README.md", "r") as fh:
@@ -13,9 +13,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/ushills/msgtopdf",
-    packages=find_namespace_packages(
-        include=["msgtopdf.*", "msg2pdf.*"], exclude=["tests"]
-    ),
+    packages=find_packages(exclude=["tests"]),
     install_requires=["pywin32", "Click", "Colorama"],
     entry_points="""
         [console_scripts]
