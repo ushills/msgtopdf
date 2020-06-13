@@ -3,7 +3,7 @@ import pathlib
 from unittest.mock import MagicMock
 import win32com.client
 
-from msgtopdf.msgtopdf import Msgtopdf
+from msgtopdf import Msgtopdf
 
 mock_outlook = MagicMock()
 win32com.client = mock_outlook
@@ -76,4 +76,3 @@ class Test_Msgtopdf:
         email.msg.BodyFormat = 1
         email.raw_email_body()
         assert email.email_format == "txt"
-
