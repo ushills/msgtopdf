@@ -16,7 +16,7 @@ logging.basicConfig(
     datefmt="%m/%d/%Y %I:%M:%S %p",
 )
 
-required_paths = ["wkhtmltopdf", "Outlook"]
+required_paths = ["wkhtmltopdf"]
 
 
 class Msgtopdf:
