@@ -20,6 +20,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: add wkhtmltopdf to path
+      run: echo "::add-path::C:\Program Files\wkhtmltopdf\bin"
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
