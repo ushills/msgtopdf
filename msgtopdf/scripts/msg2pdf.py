@@ -42,7 +42,7 @@ def convert_file(filename):
         f.email2pdf()
         print(Fore.GREEN + f"Converted {filename} to PDF!" + Fore.RESET)
     except:
-        print(Fore.RED + f"Filename is invalid, enter a valid filename!" + Fore.RESET)
+        print(Fore.RED + f"Something went wrong!" + Fore.RESET)
 
 
 def convert_directory(directory):

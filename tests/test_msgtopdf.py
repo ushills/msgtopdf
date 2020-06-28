@@ -4,9 +4,18 @@ from unittest.mock import MagicMock
 import win32com.client
 
 from msgtopdf.msgtopdf import Msgtopdf
+from msgtopdf.msgtopdf import check_paths_exist
 
 mock_outlook = MagicMock()
 win32com.client = mock_outlook
+
+
+def test_init_check_paths_exist():
+    assert check_paths_exist(["system32"]) is True
+
+
+def test_init_check_paths_does_not_exist():
+    assert check_paths_exist(["notinpath"]) is False
 
 
 class Test_Msgtopdf:

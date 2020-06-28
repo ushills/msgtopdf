@@ -1,7 +1,9 @@
-import re
-from pathlib import Path, PurePath
-import subprocess
 import logging
+import os
+import re
+import subprocess
+import sys
+from pathlib import Path, PurePath
 
 import win32com.client
 
@@ -14,9 +16,13 @@ logging.basicConfig(
     datefmt="%m/%d/%Y %I:%M:%S %p",
 )
 
+required_paths = ["wkhtmltopdf", "Outlook"]
+
 
 class Msgtopdf:
     def __init__(self, msgfile):
+        if check_paths_exist(required_paths) is False:
+            sys.exit(1)
         outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
         self.msgfile = PurePath(msgfile)
         self.directory = PurePath(self.msgfile).parent
@@ -138,3 +144,13 @@ class Msgtopdf:
         c_path = re.sub(r"[ ]{2,}", "", c_path)
         c_path = c_path.strip()
         return c_path
+
+
+def check_paths_exist(paths_to_check):
+    path = os.getenv("PATH")
+    for p in paths_to_check:
+        if p not in path:
+            logging.critical("%s not in path", p)
+            logging.error(path)
+            return False
+    return True
