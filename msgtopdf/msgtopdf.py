@@ -69,8 +69,8 @@ class Msgtopdf:
                     "--footer-line",
                     "--footer-center",
                     "[page] / [topage]",
-                    self.html_body_file,
-                    PurePath(self.save_path, self.file_name + ".pdf"),
+                    str(self.html_body_file),
+                    str(PurePath(self.save_path, self.file_name + ".pdf")),
                 ]
             )
         except Exception as e:
