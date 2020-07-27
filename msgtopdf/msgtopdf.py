@@ -60,6 +60,7 @@ class Msgtopdf:
             subprocess.run(
                 [
                     "wkhtmltopdf",
+                    "--enable-local-file-access",
                     "--log-level",
                     "warn",
                     "--encoding",
