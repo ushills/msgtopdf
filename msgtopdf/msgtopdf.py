@@ -4,6 +4,7 @@ import re
 import subprocess
 import sys
 from pathlib import Path, PurePath
+import distutils.spawn
 
 import win32com.client
 
@@ -150,7 +151,7 @@ class Msgtopdf:
 def check_paths_exist(paths_to_check):
     path = os.getenv("PATH")
     for p in paths_to_check:
-        if p not in path:
+        if not distutils.spawn.find_executable(p):
             logging.critical("%s not in path", p)
             logging.error(path)
             return False
